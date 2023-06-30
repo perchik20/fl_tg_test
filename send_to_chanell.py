@@ -69,9 +69,10 @@ def ad_from_tenant(ad, category, username, language):
     mass = ad
     mass.append(username)
     print(f'our -> {mass}')
-
+    print(f'ad->{ad}')
     if category == 1 and len(ad) == 6:
         print('ono')
+        # mass.insert(1, trans('Не имеет значения', language))
         for sent in range(len(mass)):
             if sent == 5:
                 msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'

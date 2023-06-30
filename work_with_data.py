@@ -13,6 +13,38 @@ def trans(text):
     return text_trns
 
 
+def get_ads_by_filter(person, category, filt):
+    try:
+        ads = {}
+        sqlite_connection = sqlite3.connect('db.db')
+        cursor = sqlite_connection.cursor()
+        if person == 0:
+            forma = f"SELECT * from ad_realty WHERE person='{category}' AND type='{filt}'"
+        if person == 1:
+            if type(filt) == list:
+                forma = f"SELECT * from ad_transport WHERE category='{category}' AND type='{filt[0]}' AND type_of_avto='{filt[1]}'"
+            else:
+                forma = f"SELECT * from ad_transport WHERE category='{category}' AND type='{filt}'"
+        if person == 2:
+            forma = f"SELECT * from buy_sale WHERE buy_or_sale='{category}'"
+
+        cursor.execute(forma)
+        records = cursor.fetchall()
+        keys = 1
+        for el in records:
+            element = list(el)
+            ads.update({keys: element[3:]})
+            keys += 1
+        cursor.close()
+        return ads
+
+    except sqlite3.Error as error:
+        print("Ошибка при работе с SQLite", error)
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+
 def get_ads(person, category):
     try:
         ads = {}
@@ -27,7 +59,6 @@ def get_ads(person, category):
 
         cursor.execute(forma)
         records = cursor.fetchall()
-        print(records)
         keys = 1
         for el in records:
             element = list(el)
@@ -76,8 +107,11 @@ def add_ad(contact, category, type, ad):
             #         continue
             #     else:
             #         mass[i] = trans(mass[i])
-            print(f'add in data -> {mass}')
             try:
+                if len(mass) == 7:
+                    mass.insert(1, 'Другой Транспорт')
+                print(mass)
+
                 forma = f"INSERT INTO ad_transport" \
                                       f"(user_id, category, contact, type, type_of_avto, model, period, money, comment, path_photo)" \
                                       f"VALUES " \
@@ -87,6 +121,9 @@ def add_ad(contact, category, type, ad):
                                       f"(category, contact, type, type_of_avto, model, period, money)" \
                                       f"VALUES" \
                                       f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}' ,'{mass[2]}' ,'{mass[3]}' , '{mass[4]}');"
+            finally:
+                if mass[1] == 'Другой Транспорт':
+                    mass.pop(1)
         elif category == 2:
             # for i in range(len(mass)):
             #     if i != 2:

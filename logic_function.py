@@ -82,7 +82,7 @@ def photo_check(ad, language):
     ad_clone = ad
     ad_clone.pop(0)
 
-    print(repeat_msg, '\n', ad_clone)
+
 
     msg = trans('Давайте проверим ваше объявление перед тем, как я его опубликую👇', language)
     msg += '\n\n'
@@ -92,3 +92,119 @@ def photo_check(ad, language):
 
     return msg
 
+
+def send_ad_first_tenant(call, mass_buttons, l_or_r, counter, category, ads, language):
+    photo4 = None
+    if l_or_r == 'tenant':
+        if category == 0:
+            photo4 = open(f'{ads[counter][12]}', "rb")
+        elif category == 1:
+            photo4 = open(f'{ads[counter][7]}', "rb")
+
+
+
+    msg = ''
+
+    for sent in range(len(ads[counter])-1):
+        if category == 0:
+            if sent == 9 or sent == 11:
+                msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(
+                    ads[counter][sent]) + '\n'
+            else:
+
+                msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(
+                    ads[counter][sent],
+                    language) + '\n'
+        elif category == 1:
+            if sent == 1:
+                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
+                       ads[counter][sent] + '\n'
+            else:
+                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
+                    ads[counter][sent],
+                    language) + '\n'
+
+    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
+    bot.delete_message(call.message.chat.id, call.message.message_id)
+    bot.send_photo(call.message.chat.id, photo4, caption=msg, reply_markup=ikb3, parse_mode='HTML')
+
+
+def send_ad_first_landlord(call, mass_buttons, counter, category, ads, language):
+    msg = ''
+
+    for sent in range(len(ads[counter])):
+        if category == 0:
+            if sent == 9:
+                msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + str(
+                    ads[counter][sent]) + '\n'
+            else:
+                msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(
+                    ads[counter][sent],
+                    language) + '\n'
+        elif category == 1:
+            if sent == 2 or sent == 6:
+                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
+                       ads[counter][sent] + '\n'
+            else:
+                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
+                    ads[counter][sent],
+                    language) + '\n'
+
+    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
+    bot.delete_message(call.message.chat.id, call.message.message_id)
+    bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
+
+def send_ad(call, mass_buttons, mass_buttons1, l_or_r, counter, category, ads, language):
+    photo5 = None
+    if l_or_r == 'tenant':
+        if category == 0:
+            photo5 = open(f'{ads[counter][12]}', "rb")
+            mass = ads[counter][0:12]
+        elif category == 1:
+            photo5 = open(f'{ads[counter][7]}', "rb")
+            mass = ads[counter][0:7]
+    else:
+        mass = ads[counter]
+
+    msg = ''
+
+    for sent in range(len(mass)):
+        if category == 0:
+
+            if sent == 9 or sent == 11:
+                msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + \
+                       ads[counter][sent] + '\n'
+            else:
+                msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(
+                    ads[counter][sent],
+                    language) + '\n'
+        elif category == 1:
+            if sent == 1:
+                msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + \
+                       ads[counter][sent] + '\n'
+            else:
+                msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + trans(
+                    ads[counter][sent],
+                    language) + '\n'
+    if l_or_r == 'tenant':
+        if len(ads) == counter:
+            ikb3 = types.InlineKeyboardMarkup(mass_buttons1)
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.send_photo(call.message.chat.id, photo5, caption=msg, reply_markup=ikb3, parse_mode='HTML')
+        elif 1 == counter:
+            ikb3 = types.InlineKeyboardMarkup(mass_buttons1)
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.send_photo(call.message.chat.id, photo5, caption=msg, reply_markup=ikb3, parse_mode='HTML')
+        else:
+            ikb3 = types.InlineKeyboardMarkup(mass_buttons)
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.send_photo(call.message.chat.id, photo5, caption=msg, reply_markup=ikb3, parse_mode='HTML')
+    else:
+        if len(ads) == counter:
+            ikb3 = types.InlineKeyboardMarkup(mass_buttons1)
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
+        else:
+            ikb3 = types.InlineKeyboardMarkup(mass_buttons)
+            bot.delete_message(call.message.chat.id, call.message.message_id)
+            bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
