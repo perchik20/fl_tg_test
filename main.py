@@ -220,7 +220,6 @@ def callback_inline(call):
                 bot.send_message(call.message.chat.id, buttons[0], reply_markup=buttons[1])
 
             elif point == 'check':
-                print('loh', category)
                 if category == 1:
                     check_ad = types.InlineKeyboardMarkup()
                     check_ad.add(types.InlineKeyboardButton(trans('Авто', language),
@@ -301,7 +300,6 @@ def callback_inline(call):
         elif msg == 'access':
             back = types.InlineKeyboardMarkup()
             back.add(types.InlineKeyboardButton(trans('Главное меню', language) + '🔙', callback_data='back_menu1'))
-            print(f' before add-ad -> {ad[username]}')
             add_ad(username, category, l_or_r, ad[username])
             bot.send_message(call.message.chat.id, trans('Ваше объявление добавлено!', language), reply_markup=back)
             if l_or_r == 'landlord':
@@ -338,7 +336,6 @@ def callback_inline(call):
                 bot.send_message(call.message.chat.id, trans('Выберите пункт:', language), reply_markup=ikb1)
 
         elif msg == 'back_menu1':
-            print(filters)
             delete_elem('user_category',
                         f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
             counters.pop(f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')

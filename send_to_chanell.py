@@ -13,9 +13,7 @@ def trans(text, language):
 
 
 def ad_from_landlord(category, ad, username, language):
-    print(f'send in function -> {ad}')
     mass = ad
-    print(mass)
     photo4 = None
     if category == 0:
         photo4 = open(f'{mass[12]}', "rb")
@@ -68,11 +66,7 @@ def ad_from_tenant(ad, category, username, language):
 
     mass = ad
     mass.append(username)
-    print(f'our -> {mass}')
-    print(f'ad->{ad}')
     if category == 1 and len(ad) == 6:
-        print('ono')
-        # mass.insert(1, trans('Не имеет значения', language))
         for sent in range(len(mass)):
             if sent == 5:
                 msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'

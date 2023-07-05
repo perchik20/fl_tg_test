@@ -102,7 +102,7 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
                          reply_markup=yes_or_no)
 
     for ad in ads:
-        print(ad)
+
         photo4 = None
         if l_or_r == 'tenant':
             if category == 0:

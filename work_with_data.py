@@ -60,7 +60,6 @@ def get_ads(person, category):
         mass = []
         for el in records:
             mass.append(list(el)[3:])
-        print(records)
         cursor.close()
         return mass
 
@@ -107,7 +106,6 @@ def add_ad(contact, category, type, ad):
             try:
                 if len(mass) == 7:
                     mass.insert(1, 'Другой Транспорт')
-                print(mass)
 
                 forma = f"INSERT INTO ad_transport" \
                                       f"(user_id, category, contact, type, type_of_avto, model, period, money, comment, path_photo)" \
