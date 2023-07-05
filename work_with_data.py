@@ -30,13 +30,11 @@ def get_ads_by_filter(person, category, filt):
 
         cursor.execute(forma)
         records = cursor.fetchall()
-        keys = 1
+        mass = []
         for el in records:
-            element = list(el)
-            ads.update({keys: element[3:]})
-            keys += 1
+            mass.append(list(el)[3:])
         cursor.close()
-        return ads
+        return mass
 
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)
@@ -59,13 +57,12 @@ def get_ads(person, category):
 
         cursor.execute(forma)
         records = cursor.fetchall()
-        keys = 1
+        mass = []
         for el in records:
-            element = list(el)
-            ads.update({keys: element[3:]})
-            keys += 1
+            mass.append(list(el)[3:])
+        print(records)
         cursor.close()
-        return ads
+        return mass
 
     except sqlite3.Error as error:
         print("Ошибка при работе с SQLite", error)

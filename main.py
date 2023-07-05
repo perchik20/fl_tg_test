@@ -9,12 +9,9 @@ from work_with_data import add_ad, get_ads, get_usernames, update_table, ad_time
 from send_to_chanell import ad_from_landlord, ad_from_tenant
 from parser import main, main1
 
-# bot = telebot.TeleBot(token)
-# translator = Translator()
-
 # //////////////////////////////perem///////////////////////////////////////
 
-categorys = ['Недвижимость', 'Транспорт']
+categorys = ['Недвижимости', 'ТС']
 ad = {}
 questions = {}
 ads = {}
@@ -97,161 +94,6 @@ def callback_inline(call):
             text = 'Напишите название препарата аналог которого вы ищите: '
             bot.send_message(call.message.chat.id, trans(text, language))
 
-        elif msg == 'sale':
-            update_table('user_category', 'l_or_r', 'landlord',
-                         f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
-            if point == 'send':
-                bot.delete_message(call.message.chat.id, call.message.message_id)
-                qstns = make_buttons(category, call.message.chat.username, call.message.chat.first_name, buy_sale[0], language)
-                bot.send_message(call.message.chat.id, qstns[0], reply_markup=qstns[1])
-            elif point == 'check':
-                all_realty_ads = get_ads(category, 'tenant')
-                ads.update({username: all_realty_ads})
-                for i in ads[username]:
-                    ads[username][i].pop(2)
-
-                mass_buttons = [
-                    [
-                        types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                        types.InlineKeyboardButton(trans('Далее', language), callback_data='next1')
-                    ],
-                ]
-
-                msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][1]}\nКонтакт: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][2]}'
-
-                ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-                bot.delete_message(call.message.chat.id, call.message.message_id)
-                bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
-
-        elif msg == 'buy':
-            update_table('user_category', 'l_or_r', 'tenant',
-                         f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
-            if point == 'send':
-                bot.delete_message(call.message.chat.id, call.message.message_id)
-                qstns = make_buttons(category, call.message.chat.username, call.message.chat.first_name, buy_sale[0], language)
-                bot.send_message(call.message.chat.id, qstns[0], reply_markup=qstns[1])
-            elif point == 'check':
-                all_realty_ads = get_ads(category, 'landlord')
-                ads.update({username: all_realty_ads})
-
-                mass_buttons = [
-                    [
-                        types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                        types.InlineKeyboardButton(trans('Далее', language), callback_data='next1')
-                    ],
-
-                    [types.InlineKeyboardButton(trans('Бронь', language), callback_data='order')]
-                ]
-
-                msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][1]}\nКонтакт: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][3]}'
-
-                photo1 = open(f'{ads[username][counters[username]["glb_counter_ads"]][2]}', "rb")
-
-                ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-                bot.delete_message(call.message.chat.id, call.message.message_id)
-                bot.send_photo(call.message.chat.id, photo1, caption=msg, reply_markup=ikb3, parse_mode='HTML')
-
-        elif msg == 'next1':
-
-            counters[username]['glb_counter_ads'] += 1
-
-            mass_buttons = [
-                [
-                    types.InlineKeyboardButton(trans('Назад', language), callback_data='back1'),
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next1')
-                ]
-            ]
-
-            mass_buttons1 = [
-                [
-                    types.InlineKeyboardButton(trans('Назад', language), callback_data='back1'),
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                ],
-            ]
-
-            msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание: ' \
-                  f'{ads[username][counters[username]["glb_counter_ads"]][1]}'
-
-            if l_or_r == 'landlord':
-                msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][1]}\nКонтакт: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][2]}'
-                if len(ads[username]) == counters[username]["glb_counter_ads"]:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons1)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
-                else:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
-
-            elif l_or_r == 'tenant':
-                photo2 = open(f'{ads[username][counters[username]["glb_counter_ads"]][2]}', "rb")
-                msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][1]}\nКонтакт: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][3]}'
-                if len(ads[username]) == counters[username]["glb_counter_ads"]:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons1)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_photo(call.message.chat.id, photo2, caption=msg, reply_markup=ikb3, parse_mode='HTML')
-                else:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_photo(call.message.chat.id, photo2, caption=msg, reply_markup=ikb3, parse_mode='HTML')
-
-        elif msg == 'back1':
-            counters[username]["glb_counter_ads"] += 1
-
-            mass_buttons = [
-                [
-                    types.InlineKeyboardButton(trans('Назад', language), callback_data='back1'),
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next1')
-                ],
-            ]
-
-            mass_buttons1 = [
-                [
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads)}', callback_data='--'),
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next1'),
-                ],
-            ]
-
-            msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание: {ads[username][counters[username]["glb_counter_ads"]][1]}'
-
-            if l_or_r == 'landlord':
-                msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание:' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][1]}\nКонтакт: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][2]}'
-
-                if counters[username]["glb_counter_ads"] == 1:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons1)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
-                else:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
-            elif l_or_r == 'tenant':
-                photo3 = open(f'{ads[username][counters[username]["glb_counter_ads"]][2]}', "rb")
-                msg = f'Категория: {ads[username][counters[username]["glb_counter_ads"]][0]}\nОписание: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][1]}\nКонтакт: ' \
-                      f'{ads[username][counters[username]["glb_counter_ads"]][3]}'
-
-                if counters[username]["glb_counter_ads"] == 1:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons1)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_photo(call.message.chat.id, photo3, caption=msg, reply_markup=ikb3, parse_mode='HTML')
-                else:
-                    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-                    bot.delete_message(call.message.chat.id, call.message.message_id)
-                    bot.send_photo(call.message.chat.id, photo3, caption=msg, reply_markup=ikb3, parse_mode='HTML')
-
         elif msg == 'realty':
             counters.update({f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>':
                                  {'glb_counter': 0, 'glb_counter_ads': 1, 'menu_counter': 0}})
@@ -304,8 +146,8 @@ def callback_inline(call):
                 counters[username]['menu_counter'] += 1
                 bot.delete_message(call.message.chat.id, call.message.message_id)
                 ikb2 = types.InlineKeyboardMarkup()
-                ikb2.add(types.InlineKeyboardButton(trans(f'Я сдаю {categorys[category]}', language), callback_data='landlord'))
-                ikb2.add(types.InlineKeyboardButton(trans(f'Я ищу {categorys[category]}', language), callback_data='tenant'))
+                ikb2.add(types.InlineKeyboardButton(trans(f'Предложения аренды {categorys[category]}', language), callback_data='landlord'))
+                ikb2.add(types.InlineKeyboardButton(trans(f'Спрос на аренду {categorys[category]}', language), callback_data='tenant'))
                 ikb2.add(types.InlineKeyboardButton(trans('Назад 🔙', language), callback_data='back_menu'))
                 bot.send_message(call.message.chat.id, trans('Выберите пункт:', language), reply_markup=ikb2)
             elif category == 2:
@@ -323,8 +165,8 @@ def callback_inline(call):
             if category != 2:
                 bot.delete_message(call.message.chat.id, call.message.message_id)
                 ikb2 = types.InlineKeyboardMarkup()
-                ikb2.add(types.InlineKeyboardButton(trans(f'Я сдаю {categorys[category]}', language), callback_data='landlord'))
-                ikb2.add(types.InlineKeyboardButton(trans(f'Я ищу {categorys[category]}', language), callback_data='tenant'))
+                ikb2.add(types.InlineKeyboardButton(trans(f'Предложения аренды {categorys[category]}', language), callback_data='landlord'))
+                ikb2.add(types.InlineKeyboardButton(trans(f'Спрос на аренду {categorys[category]}', language), callback_data='tenant'))
                 ikb2.add(types.InlineKeyboardButton(trans('Назад 🔙', language), callback_data='back_menu'))
                 bot.send_message(call.message.chat.id, trans('Выберите пункт:', language), reply_markup=ikb2)
             elif category == 2:
@@ -427,38 +269,14 @@ def callback_inline(call):
                 all_realty_ads = get_ads_by_filter(category, 'landlord', filters[username][0])
                 ads.update({username: all_realty_ads})
 
-                mass_buttons = [
-                    [
-                        types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}',
-                                                   callback_data='--'),
-                        types.InlineKeyboardButton(trans('Далее', language), callback_data='next')
-                    ],
-                    [
-                        types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                    ]
-                ]
-
-                send_ad_first_tenant(call, mass_buttons, l_or_r, counters[username]["glb_counter_ads"], category,
-                                     ads[username], language)
+                send_ad_first_tenant(call, l_or_r, category, ads[username], language)
         elif msg == 'Вилла' or msg == 'Кондо':
             l_or_r = get('l_or_r',
                          f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
             all_realty_ads = get_ads_by_filter(category, 'landlord', msg)
             ads.update({username: all_realty_ads})
 
-            mass_buttons = [
-                [
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}',
-                                               callback_data='--'),
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next')
-                ],
-                [
-                    types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                ]
-            ]
-
-            send_ad_first_tenant(call, mass_buttons, l_or_r, counters[username]["glb_counter_ads"], category,
-                                 ads[username], language)
+            send_ad_first_tenant(call, l_or_r, category, ads[username], language)
 
         elif msg == 'Легковой' or msg == 'Внедорожник' or msg == 'Минивэн (5 и более пассажирских мест)':
             filters[username].append(msg)
@@ -467,19 +285,8 @@ def callback_inline(call):
             all_realty_ads = get_ads_by_filter(category, 'landlord', filters[username])
             ads.update({username: all_realty_ads})
 
-            mass_buttons = [
-                [
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}',
-                                               callback_data='--'),
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next')
-                ],
-                [
-                    types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                ]
-            ]
 
-            send_ad_first_tenant(call, mass_buttons, l_or_r, counters[username]["glb_counter_ads"], category,
-                                 ads[username], language)
+            send_ad_first_tenant(call, l_or_r, category, ads[username], language)
 
         elif msg == 'check_all':
             if l_or_r == 'tenant':
@@ -487,17 +294,7 @@ def callback_inline(call):
                 all_realty_ads = get_ads(category, 'landlord')
                 ads.update({username: all_realty_ads})
 
-                mass_buttons = [
-                    [
-                        types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                        types.InlineKeyboardButton(trans('Далее', language), callback_data='next')
-                    ],
-                    [
-                        types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                    ]
-                ]
-
-                send_ad_first_tenant(call, mass_buttons, l_or_r, counters[username]["glb_counter_ads"], category, ads[username], language)
+                send_ad_first_tenant(call, l_or_r, category, ads[username], language)
 
         # //////////////////////////////// Choosing a button under check /////////////////////////////////////////////
 
@@ -521,60 +318,6 @@ def callback_inline(call):
             bot.send_message(call.message.chat.id, buttons[0], reply_markup=buttons[1])
 
         # //////////////////////////////// next, order or back /////////////////////////////////////////////
-
-        elif msg == 'next':
-
-            counters[username]['glb_counter_ads'] += 1
-            mass_buttons = [
-                [
-                    types.InlineKeyboardButton(trans('Назад', language), callback_data='back'),
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next')
-                ],
-                [
-                    types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                ]
-            ]
-
-            mass_buttons1 = [
-                [
-                    types.InlineKeyboardButton(trans('Назад', language), callback_data='back'),
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-
-                ],
-                [
-                    types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                ]
-            ]
-
-            send_ad(call, mass_buttons, mass_buttons1, l_or_r, counters[username]["glb_counter_ads"], category, ads[username], language)
-
-        elif msg == 'back':
-            counters[username]["glb_counter_ads"] -= 1
-
-            mass_buttons = [
-                [
-                    types.InlineKeyboardButton(trans('Назад', language), callback_data='back'),
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next')
-                ],
-                [
-                    types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                ]
-            ]
-
-            mass_buttons1 = [
-                [
-                    types.InlineKeyboardButton(trans('Далее', language), callback_data='next'),
-                    types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--')
-                ],
-                [
-                    types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'),
-                ]
-            ]
-
-            send_ad(call, mass_buttons, mass_buttons1, l_or_r, counters[username]["glb_counter_ads"], category,
-                    ads[username], language)
 
         elif msg == 'back_menu':
 
@@ -618,6 +361,45 @@ def callback_inline(call):
             bot.send_message(call.message.chat.id, trans('Все доступные аналоги: ', language),
                              reply_markup=ikb_medicines)
 
+        elif msg == 'Yes':
+            if category == 1:
+                check_ad = types.InlineKeyboardMarkup()
+                check_ad.add(types.InlineKeyboardButton(trans('Авто', language),
+                                                        callback_data='Авто'))
+                check_ad.add(types.InlineKeyboardButton(trans('Мопед/Мотоцикл', language),
+                                                        callback_data='Мопед/Мотоцикл'))
+                check_ad.add(types.InlineKeyboardButton(trans('Другой транспорт', language),
+                                                        callback_data='Другой транспорт'))
+                check_ad.add(types.InlineKeyboardButton(trans('Посмотреть все объявления', language),
+                                                        callback_data='check_all'))
+
+                bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language),
+                                 reply_markup=check_ad)
+            elif category == 0:
+                check_ad = types.InlineKeyboardMarkup()
+                check_ad.add(types.InlineKeyboardButton(trans('Кондо', language),
+                                                        callback_data='Кондо'))
+                check_ad.add(types.InlineKeyboardButton(trans('Вилла', language),
+                                                        callback_data='Вилла'))
+                check_ad.add(types.InlineKeyboardButton(trans('Посмотреть все объявления', language),
+                                                        callback_data='check_all'))
+
+                bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language),
+                                 reply_markup=check_ad)
+
+        elif msg == 'No':
+            ads[username].clear()
+            counters.update({username: {'glb_counter': 0, 'glb_counter_ads': 1, 'menu_counter': 0}})
+            language = get_lng(username)
+            delete_elem('user_category', username)
+            if username in ad:
+                ad.pop(username)
+            if username in questions:
+                questions.pop(username)
+
+            buttons = category1(language)
+            bot.send_message(call.message.chat.id, buttons[0], reply_markup=buttons[1])
+
         else:
             for i in questions[f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>']:
                 if i == msg:
@@ -630,7 +412,7 @@ def callback_inline(call):
                 if l_or_r == 'landlord':
                     if len(ad[username]) == 1 and ad[username][0] == 'Мопед/Мотоцикл' or ad[username][0] == 'Moped/Motorcycle':
                         counters[username]['glb_counter'] += 1
-                        ad[f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>'].append('Не соотвесвует')
+                        ad[f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>'].append('Не соотвествует')
                         bot.delete_message(call.message.chat.id, call.message.message_id)
                         bot.send_message(call.message.chat.id,
                                          trans(realty[category][counters[username]["glb_counter"]], language))
@@ -650,7 +432,7 @@ def callback_inline(call):
                 elif l_or_r == 'tenant':
                     if len(ad[username]) == 1 and ad[username][0] == 'Мопед/Мотоцикл' or ad[username][0] == 'Moped/Motorcycle':
                         counters[username]['glb_counter'] += 1
-                        ad[f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>'].append('Не соотвесвует')
+                        ad[f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>'].append('Не соотвествует')
                         pass_button = types.ReplyKeyboardMarkup(True, True)
                         pass_button.row("Не имеет значения")
                         bot.delete_message(call.message.chat.id, call.message.message_id)

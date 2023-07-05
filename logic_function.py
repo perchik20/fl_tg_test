@@ -93,44 +93,57 @@ def photo_check(ad, language):
     return msg
 
 
-def send_ad_first_tenant(call, mass_buttons, l_or_r, counter, category, ads, language):
-    photo4 = None
-    if l_or_r == 'tenant':
-        if category == 0:
-            photo4 = open(f'{ads[counter][12]}', "rb")
-        elif category == 1:
-            photo4 = open(f'{ads[counter][7]}', "rb")
+def send_ad_first_tenant(call, l_or_r, category, ads, language):
+    if len(ads) == 0:
+        yes_or_no = types.InlineKeyboardMarkup()
+        yes_or_no.add(types.InlineKeyboardButton(trans('Да', language), callback_data='Yes'))
+        yes_or_no.add(types.InlineKeyboardButton(trans('Нет', language), callback_data='No'))
+        bot.send_message(call.message.chat.id, ' Пока таких объявлений нет.\nХотите изменить фильтры?',
+                         reply_markup=yes_or_no)
+
+    for ad in ads:
+        print(ad)
+        photo4 = None
+        if l_or_r == 'tenant':
+            if category == 0:
+                photo4 = open(f'{ad[12]}', "rb")
+            elif category == 1:
+                photo4 = open(f'{ad[7]}', "rb")
 
 
+        msg = '#Cдам\n\n'
 
-    msg = ''
+        for sent in range(len(ad)-1):
+            if category == 0:
+                if sent == 9 or sent == 11:
+                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(
+                        ad[sent]) + '\n'
+                else:
 
-    for sent in range(len(ads[counter])-1):
-        if category == 0:
-            if sent == 9 or sent == 11:
-                msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(
-                    ads[counter][sent]) + '\n'
-            else:
+                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(
+                        ad[sent],
+                        language) + '\n'
+            elif category == 1:
+                if sent == 1:
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
+                           ad[sent] + '\n'
+                else:
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
+                        ad[sent],
+                        language) + '\n'
 
-                msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(
-                    ads[counter][sent],
-                    language) + '\n'
-        elif category == 1:
-            if sent == 1:
-                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
-                       ads[counter][sent] + '\n'
-            else:
-                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
-                    ads[counter][sent],
-                    language) + '\n'
-
-    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-    bot.delete_message(call.message.chat.id, call.message.message_id)
-    bot.send_photo(call.message.chat.id, photo4, caption=msg, reply_markup=ikb3, parse_mode='HTML')
+        bot.send_photo(call.message.chat.id, photo4, caption=msg, parse_mode='HTML')
 
 
 def send_ad_first_landlord(call, mass_buttons, counter, category, ads, language):
-    msg = ''
+    if len(ads) == 0:
+        yes_or_no = types.InlineKeyboardMarkup()
+        yes_or_no.add(types.InlineKeyboardButton(trans('Да', language), call_back='Yes'))
+        yes_or_no.add(types.InlineKeyboardButton(trans('Нет', language), call_back='No'))
+        bot.send_message(call.message.chat.id, 'Пока таких объявлений нет.\nХотите изменить фильтры?',
+                         reply_markup=yes_or_no)
+
+    msg = '#Ищу\n\n'
 
     for sent in range(len(ads[counter])):
         if category == 0:
@@ -153,6 +166,7 @@ def send_ad_first_landlord(call, mass_buttons, counter, category, ads, language)
     ikb3 = types.InlineKeyboardMarkup(mass_buttons)
     bot.delete_message(call.message.chat.id, call.message.message_id)
     bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
+
 
 def send_ad(call, mass_buttons, mass_buttons1, l_or_r, counter, category, ads, language):
     photo5 = None
