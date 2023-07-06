@@ -1,10 +1,6 @@
-import telebot
-from googletrans import Translator
-from config import token
+from config import bot, translator
 from questions import repeat_msg_0, repeat_msg_1
-
-bot = telebot.TeleBot(token)
-translator = Translator()
+from telebot import types
 
 
 def trans(text, language):
@@ -39,6 +35,13 @@ def ad_from_landlord(category, ad, username, language):
 
     msg = '#сдам\n\n'
 
+    if category == 1:
+        link = types.InlineKeyboardMarkup()
+        link .add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://facebook.com'))
+    elif category == 0:
+        link = types.InlineKeyboardMarkup()
+        link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://facebook.com'))
+
     if category == 1 and len(ad) == 6:
         for sent in range(len(mass)):
             if sent == 5:
@@ -57,6 +60,7 @@ def ad_from_landlord(category, ad, username, language):
                     msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + mass[sent] + '\n'
                 else:
                     msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + mass[sent] + '\n'
+
 
     bot.send_photo(chat_id=-1001901862304, photo=photo4, caption=msg, parse_mode='HTML')
 

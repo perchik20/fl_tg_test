@@ -28,10 +28,10 @@ def trans(text, language):
 
 def category1(language):
     ikb = types.InlineKeyboardMarkup()
-    ikb.add(types.InlineKeyboardButton(trans('Недвижимость', language), callback_data='realty'))
+    # ikb.add(types.InlineKeyboardButton(trans('Недвижимость', language), callback_data='realty'))
     ikb.add(types.InlineKeyboardButton(trans('Транспорт', language), callback_data='transport'))
-    ikb.add(types.InlineKeyboardButton(trans('Куплю/Продам', language), callback_data='buy_sale'))
-    ikb.add(types.InlineKeyboardButton(trans('Медицина', language), callback_data='medicines'))
+    # ikb.add(types.InlineKeyboardButton(trans('Куплю/Продам', language), callback_data='buy_sale'))
+    # ikb.add(types.InlineKeyboardButton(trans('Медицина', language), callback_data='medicines'))
     # ikb.add(types.InlineKeyboardButton(trans('Выполняю/Покупаю услуги', language), callback_data='do_buy'))
 
     text_trns = trans('Выберите категорию: ', language)
@@ -190,27 +190,19 @@ def callback_inline(call):
                              f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
                 all_realty_ads = get_ads(category, 'tenant')
                 ads.update({username: all_realty_ads})
+                print(ads)
                 if category == 0:
                     for i in ads[username]:
-                        ads[username][i].pop(9)
-                        ads[username][i].pop(9)
-                        ads[username][i].pop(10)
+                        i.pop(9)
+                        i.pop(9)
+                        i.pop(10)
 
                 elif category == 1:
                     for i in ads[username]:
-                        ads[username][i].pop(5)
-                        ads[username][i].pop(6)
+                        i.pop(5)
+                        i.pop(6)
 
-
-                mass_buttons = [
-                    [
-                        types.InlineKeyboardButton(trans('Назад', language), callback_data='back'),
-                        types.InlineKeyboardButton(f'{counters[username]["glb_counter_ads"]}/{len(ads[username])}', callback_data='--'),
-                        types.InlineKeyboardButton(trans('Далее', language), callback_data='next')
-                    ]
-                ]
-
-                send_ad_first_landlord(call, mass_buttons, counters[username]["glb_counter_ads"], category, ads[username], language)
+                send_ad_first_landlord(call, l_or_r, category, ads[username], language)
 
         elif msg == 'tenant':
             update_table('user_category', 'l_or_r', 'tenant',
@@ -294,6 +286,13 @@ def callback_inline(call):
                 ads.update({username: all_realty_ads})
 
                 send_ad_first_tenant(call, l_or_r, category, ads[username], language)
+            elif l_or_r == 'landlord':
+                l_or_r = get('l_or_r',
+                             f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
+                all_realty_ads = get_ads(category, 'tenant')
+                ads.update({username: all_realty_ads})
+
+                send_ad_first_landlord(call, l_or_r, category, ads[username], language)
 
         # //////////////////////////////// Choosing a button under check /////////////////////////////////////////////
 

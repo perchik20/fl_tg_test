@@ -131,41 +131,44 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
                         ad[sent],
                         language) + '\n'
+        ad_button = types.InlineKeyboardMarkup()
+        ad_button.add(types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'))
 
-        bot.send_photo(call.message.chat.id, photo4, caption=msg, parse_mode='HTML')
+        bot.send_photo(call.message.chat.id, photo4, caption=msg, reply_markup=ad_button, parse_mode='HTML')
 
 
-def send_ad_first_landlord(call, mass_buttons, counter, category, ads, language):
+def send_ad_first_landlord(call, counter, category, ads, language):
     if len(ads) == 0:
         yes_or_no = types.InlineKeyboardMarkup()
-        yes_or_no.add(types.InlineKeyboardButton(trans('Да', language), call_back='Yes'))
-        yes_or_no.add(types.InlineKeyboardButton(trans('Нет', language), call_back='No'))
-        bot.send_message(call.message.chat.id, 'Пока таких объявлений нет.\nХотите изменить фильтры?',
+        yes_or_no.add(types.InlineKeyboardButton(trans('Да', language), callback_data='Yes'))
+        yes_or_no.add(types.InlineKeyboardButton(trans('Нет', language), callback_data='No'))
+        bot.send_message(call.message.chat.id, ' Пока таких объявлений нет.\nХотите изменить фильтры?',
                          reply_markup=yes_or_no)
+    print(ads)
+    for ad in ads:
+        msg = '#Ищу\n\n'
 
-    msg = '#Ищу\n\n'
+        for sent in range(len(ad)):
+            if category == 0:
+                if sent == 9:
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + str(
+                        ad[sent]) + '\n'
+                else:
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(
+                        ad[sent],
+                        language) + '\n'
+            elif category == 1:
+                if sent == 2 or sent == 6:
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
+                           ad[sent] + '\n'
+                else:
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
+                        ad[sent],
+                        language) + '\n'
+        ad_button = types.InlineKeyboardMarkup()
+        ad_button.add(types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'))
 
-    for sent in range(len(ads[counter])):
-        if category == 0:
-            if sent == 9:
-                msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + str(
-                    ads[counter][sent]) + '\n'
-            else:
-                msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(
-                    ads[counter][sent],
-                    language) + '\n'
-        elif category == 1:
-            if sent == 2 or sent == 6:
-                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
-                       ads[counter][sent] + '\n'
-            else:
-                msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
-                    ads[counter][sent],
-                    language) + '\n'
-
-    ikb3 = types.InlineKeyboardMarkup(mass_buttons)
-    bot.delete_message(call.message.chat.id, call.message.message_id)
-    bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
+        bot.send_message(call.message.chat.id, msg, reply_markup=ad_button, parse_mode='HTML')
 
 
 def send_ad(call, mass_buttons, mass_buttons1, l_or_r, counter, category, ads, language):
