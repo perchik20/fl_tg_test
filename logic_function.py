@@ -112,25 +112,28 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
 
 
         msg = '#Cдам\n\n'
+        print(ad)
 
-        for sent in range(len(ad)-1):
-            if category == 0:
+        if category == 0:
+            for sent in range(len(ad) - 2):
                 if sent == 9 or sent == 11:
-                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(
-                        ad[sent]) + '\n'
+                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(ad[sent]) + '\n'
                 else:
+                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
 
-                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(
-                        ad[sent],
-                        language) + '\n'
-            elif category == 1:
+        elif category == 1 and ad[0] == 'Другой Транспорт':
+            ad.pop(0)
+            for sent in range(len(ad) - 2):
+                msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(ad[sent]) + '\n'
+
+        elif category == 1:
+            for sent in range(len(ad) - 2):
                 if sent == 1:
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
                            ad[sent] + '\n'
                 else:
-                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
-                        ad[sent],
-                        language) + '\n'
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
+
         ad_button = types.InlineKeyboardMarkup()
         ad_button.add(types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'))
 
@@ -144,12 +147,11 @@ def send_ad_first_landlord(call, counter, category, ads, language):
         yes_or_no.add(types.InlineKeyboardButton(trans('Нет', language), callback_data='No'))
         bot.send_message(call.message.chat.id, ' Пока таких объявлений нет.\nХотите изменить фильтры?',
                          reply_markup=yes_or_no)
-    print(ads)
     for ad in ads:
         msg = '#Ищу\n\n'
 
-        for sent in range(len(ad)):
-            if category == 0:
+        if category == 0:
+            for sent in range(len(ad)):
                 if sent == 9:
                     msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + str(
                         ad[sent]) + '\n'
@@ -157,7 +159,12 @@ def send_ad_first_landlord(call, counter, category, ads, language):
                     msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(
                         ad[sent],
                         language) + '\n'
-            elif category == 1:
+        elif category == 1 and ad[0] == 'Другой Транспорт':
+            ad.pop(0)
+            for sent in range(len(ad)):
+                msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(ad[sent]) + '\n'
+        elif category == 1:
+            for sent in range(len(ad)):
                 if sent == 2 or sent == 6:
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
                            ad[sent] + '\n'
@@ -165,6 +172,7 @@ def send_ad_first_landlord(call, counter, category, ads, language):
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
                         ad[sent],
                         language) + '\n'
+
         ad_button = types.InlineKeyboardMarkup()
         ad_button.add(types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'))
 

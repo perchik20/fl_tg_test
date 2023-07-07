@@ -11,6 +11,7 @@ def trans(text, language):
 def ad_from_landlord(category, ad, username, language):
     mass = ad
     photo4 = None
+    print(f'mass->{mass}')
     if category == 0:
         photo4 = open(f'{mass[12]}', "rb")
         mass.pop(0)
@@ -32,7 +33,7 @@ def ad_from_landlord(category, ad, username, language):
         mass.pop(0)
         mass.pop(6)
         mass.append(username)
-
+    print(mass)
     msg = '#сдам\n\n'
 
     if category == 1:
@@ -54,12 +55,12 @@ def ad_from_landlord(category, ad, username, language):
                 if sent == 9 or sent == 11:
                     msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
                 else:
-                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + mass[sent] + '\n'
+                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
             elif category == 1:
                 if sent == 1:
-                    msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + mass[sent] + '\n'
+                    msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
                 else:
-                    msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + mass[sent] + '\n'
+                    msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
 
 
     bot.send_photo(chat_id=-1001901862304, photo=photo4, caption=msg, parse_mode='HTML')
@@ -89,11 +90,11 @@ def ad_from_tenant(ad, category, username, language):
                 if sent == 9:
                     msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
                 else:
-                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + mass[sent] + '\n'
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
             elif category == 1:
                 if sent == 2 or sent == 6:
-                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + mass[sent] + '\n'
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
                 else:
-                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + mass[sent] + '\n'
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
     
     bot.send_message(chat_id=-1001901862304, text=msg, parse_mode='HTML')

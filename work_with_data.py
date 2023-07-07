@@ -70,7 +70,7 @@ def get_ads(person, category):
             sqlite_connection.close()
 
 
-def add_ad(contact, category, type, ad):
+def add_ad(contact, category, type, ad, current_date):
     try:
         sqlite_connection = sqlite3.connect('db.db')
         cursor = sqlite_connection.cursor()
@@ -85,54 +85,36 @@ def add_ad(contact, category, type, ad):
             try:
                 forma = f"INSERT INTO ad_realty" \
                                     f"(user_id, person, contact, type, rooms, bathrooms, size, pool, child, " \
-                                    f"pets, minimal_months, price, link_maps, comment, path_photo)" \
+                                    f"pets, minimal_months, price, link_maps, comment, path_photo, last_date)" \
                                     f"VALUES " \
                                     f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', '{mass[6]}', " \
-                                    f"'{mass[7]}', '{mass[8]}', '{mass[9]}', '{mass[10]}', '{mass[11]}', '{mass[12]}');"
+                                    f"'{mass[7]}', '{mass[8]}', '{mass[9]}', '{mass[10]}', '{mass[11]}', '{mass[12]}', date('{current_date}'));"
             except:
                 forma = f"INSERT INTO ad_realty" \
                                       f"(person, contact, type, rooms, bathrooms, size, pool, child, " \
-                                      f"pets, minimal_months, price)" \
+                                      f"pets, minimal_months, price, last_date)" \
                                       f"VALUES" \
                                       f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', " \
-                                      f"'{mass[6]}', '{mass[7]}', '{mass[8]}');"
+                                      f"'{mass[6]}', '{mass[7]}', '{mass[8]}', date('{current_date}'));"
 
         elif category == 1:
-            # for i in range(len(mass)):
-            #     if i == 1 or i == 6:
-            #         continue
-            #     else:
-            #         mass[i] = trans(mass[i])
+            print(f'in base->{mass}')
             try:
-                if len(mass) == 7:
-                    mass.insert(1, 'Другой Транспорт')
+                if len(mass) == 7 or len(mass) == 5:
+                    mass.insert(0, 'Другой Транспорт')
 
                 forma = f"INSERT INTO ad_transport" \
-                                      f"(user_id, category, contact, type, type_of_avto, model, period, money, comment, path_photo)" \
+                                      f"(user_id, category, contact, type, type_of_avto, model, period, money, comment, path_photo, last_date)" \
                                       f"VALUES " \
-                                      f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}' ,'{mass[3]}' ,'{mass[4]}' , '{mass[5]}', '{mass[6]}', '{mass[7]}');"
+                                      f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}' ,'{mass[3]}' ,'{mass[4]}' , '{mass[5]}', '{mass[6]}', '{mass[7]}', date('{current_date}'));"
             except:
                 forma = f"INSERT INTO ad_transport" \
-                                      f"(category, contact, type, type_of_avto, model, period, money)" \
+                                      f"(category, contact, type, type_of_avto, model, period, money, comment, last_date)" \
                                       f"VALUES" \
-                                      f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}' ,'{mass[2]}' ,'{mass[3]}' , '{mass[4]}');"
+                                      f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}' ,'{mass[2]}' ,'{mass[3]}' , '{mass[4]}', '{mass[5]}', date('{current_date}'));"
             finally:
-                if mass[1] == 'Другой Транспорт':
-                    mass.pop(1)
-        elif category == 2:
-            # for i in range(len(mass)):
-            #     if i != 2:
-            #         mass[i] = trans(mass[i])
-            try:
-                forma = f"INSERT INTO buy_sale" \
-                                      f"(buy_or_sale, contact, category, discription, photo_path)" \
-                                      f"VALUES" \
-                                      f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}', '{mass[2]}');"
-            except:
-                forma = f"INSERT INTO buy_sale" \
-                                      f"(buy_or_sale, contact, category, discription)" \
-                                      f"VALUES" \
-                                      f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}');"
+                if mass[0] == 'Другой Транспорт':
+                    mass.pop(0)
 
         count = cursor.execute(forma)
         sqlite_connection.commit()
@@ -271,24 +253,6 @@ def delete_elem(table, username):
         cursor = sqlite_connection.cursor()
 
         forma = f"DELETE FROM {table} WHERE username = '{username}'; "
-
-        cursor.execute(forma)
-        sqlite_connection.commit()
-        cursor.close()
-
-    except sqlite3.Error as error:
-        print("Ошибка при работе с SQLite2", error)
-    finally:
-        if sqlite_connection:
-            sqlite_connection.close()
-
-
-def add_counter(username):
-    try:
-        sqlite_connection = sqlite3.connect('db.db')
-        cursor = sqlite_connection.cursor()
-
-        forma = f"INSERT INTO counters (username, glb_counter, glb_counters_ads, menu_counter) VALUES ('{username}', {0}, {0}, {0});"
 
         cursor.execute(forma)
         sqlite_connection.commit()

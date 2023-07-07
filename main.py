@@ -1,4 +1,5 @@
 from telebot import types
+import datetime as DT
 
 from config import bot, translator
 from logic_function import send_questions, check_ad, photo_check, send_ad, send_ad_first_landlord, send_ad_first_tenant
@@ -190,7 +191,7 @@ def callback_inline(call):
                              f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
                 all_realty_ads = get_ads(category, 'tenant')
                 ads.update({username: all_realty_ads})
-                print(ads)
+
                 if category == 0:
                     for i in ads[username]:
                         i.pop(9)
@@ -199,8 +200,8 @@ def callback_inline(call):
 
                 elif category == 1:
                     for i in ads[username]:
-                        i.pop(5)
-                        i.pop(6)
+                        i.pop(7)
+                        i.pop(7)
 
                 send_ad_first_landlord(call, l_or_r, category, ads[username], language)
 
@@ -269,13 +270,13 @@ def callback_inline(call):
 
             send_ad_first_tenant(call, l_or_r, category, ads[username], language)
 
-        elif msg == 'Легковой' or msg == 'Внедорожник' or msg == 'Минивэн (5 и более пассажирских мест)':
+        elif msg == 'Легковой' or msg == 'Внедорожник' or msg == 'Минивэн':
             filters[username].append(msg)
             l_or_r = get('l_or_r',
                          f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
             all_realty_ads = get_ads_by_filter(category, 'landlord', filters[username])
             ads.update({username: all_realty_ads})
-
+            print(ads)
 
             send_ad_first_tenant(call, l_or_r, category, ads[username], language)
 
@@ -297,9 +298,11 @@ def callback_inline(call):
         # //////////////////////////////// Choosing a button under check /////////////////////////////////////////////
 
         elif msg == 'access':
+            print(ad)
             back = types.InlineKeyboardMarkup()
             back.add(types.InlineKeyboardButton(trans('Главное меню', language) + '🔙', callback_data='back_menu1'))
-            add_ad(username, category, l_or_r, ad[username])
+            current_date = DT.datetime.now().date() + DT.timedelta(days=30)
+            add_ad(username, category, l_or_r, ad[username], current_date)
             bot.send_message(call.message.chat.id, trans('Ваше объявление добавлено!', language), reply_markup=back)
             if l_or_r == 'landlord':
                 ad_from_landlord(category, ad[username], username, language)
