@@ -112,7 +112,6 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
 
 
         msg = '#Cдам\n\n'
-        print(ad)
 
         if category == 0:
             for sent in range(len(ad) - 2):

@@ -276,7 +276,6 @@ def callback_inline(call):
                          f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
             all_realty_ads = get_ads_by_filter(category, 'landlord', filters[username])
             ads.update({username: all_realty_ads})
-            print(ads)
 
             send_ad_first_tenant(call, l_or_r, category, ads[username], language)
 
@@ -298,7 +297,6 @@ def callback_inline(call):
         # //////////////////////////////// Choosing a button under check /////////////////////////////////////////////
 
         elif msg == 'access':
-            print(ad)
             back = types.InlineKeyboardMarkup()
             back.add(types.InlineKeyboardButton(trans('Главное меню', language) + '🔙', callback_data='back_menu1'))
             current_date = DT.datetime.now().date() + DT.timedelta(days=30)
@@ -501,6 +499,11 @@ def admin(message):
         bot.send_message(message.chat.id, trans('Введите срок времени жизни поста: ', language))
     else:
         bot.send_message(message.chat.id, trans('У вас нет доступа', language))
+
+
+@bot.message_handler(commands=['id'])
+def admin(message):
+    print(message)
 
 
 @bot.message_handler(content_types=['text'])

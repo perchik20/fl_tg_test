@@ -98,7 +98,6 @@ def add_ad(contact, category, type, ad, current_date):
                                       f"'{mass[6]}', '{mass[7]}', '{mass[8]}', date('{current_date}'));"
 
         elif category == 1:
-            print(f'in base->{mass}')
             try:
                 if len(mass) == 7 or len(mass) == 5:
                     mass.insert(0, 'Другой Транспорт')
