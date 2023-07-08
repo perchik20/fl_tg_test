@@ -15,6 +15,7 @@ def trans(text):
 
 def get_ads_by_filter(person, category, filt):
     try:
+        print(f'filter -> {filt}')
         ads = {}
         sqlite_connection = sqlite3.connect('db.db')
         cursor = sqlite_connection.cursor()

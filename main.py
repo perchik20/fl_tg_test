@@ -220,7 +220,7 @@ def callback_inline(call):
                     check_ad.add(types.InlineKeyboardButton(trans('Мопед/Мотоцикл', language),
                                                             callback_data='Мопед/Мотоцикл'))
                     check_ad.add(types.InlineKeyboardButton(trans('Другой транспорт', language),
-                                                            callback_data='Другой транспорт'))
+                                                            callback_data='Другой Транспорт'))
                     check_ad.add(types.InlineKeyboardButton(trans('Посмотреть все объявления', language),
                                                             callback_data='check_all'))
 
@@ -238,7 +238,7 @@ def callback_inline(call):
                     bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language),
                                      reply_markup=check_ad)
 
-        elif msg == 'Авто' or msg == 'Мопед/Мотоцикл' or msg == 'Другой транспорт':
+        elif msg == 'Авто' or msg == 'Мопед/Мотоцикл' or msg == 'Другой Транспорт':
             filters.update({username: []})
             filters[username].append(msg)
             if filters[username][0] == 'Авто':
@@ -254,10 +254,10 @@ def callback_inline(call):
 
                 bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language), reply_markup=check_ad)
 
-            elif filters[username][0] == 'Мопед/Мотоцикл' or filters[username][0] == 'Другой транспорт':
+            elif filters[username][0] == 'Мопед/Мотоцикл' or filters[username][0] == 'Другой Транспорт':
                 l_or_r = get('l_or_r',
                              f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
-
+                print(f'filter -> {filters[username][0]}')
                 all_realty_ads = get_ads_by_filter(category, 'landlord', filters[username][0])
                 ads.update({username: all_realty_ads})
 
