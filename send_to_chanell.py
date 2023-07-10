@@ -35,12 +35,8 @@ def ad_from_landlord(category, ad, username, language):
 
     msg = '#сдам\n\n'
 
-    if category == 1:
-        link = types.InlineKeyboardMarkup()
-        link .add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://facebook.com'))
-    elif category == 0:
-        link = types.InlineKeyboardMarkup()
-        link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://facebook.com'))
+    link = types.InlineKeyboardMarkup()
+    link .add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://t.me/HH_Buro_bot'))
 
     if category == 1 and len(ad) == 6:
         for sent in range(len(mass)):
@@ -62,11 +58,17 @@ def ad_from_landlord(category, ad, username, language):
                     msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
 
     if category == 0:
-        bot.send_photo(chat_id=-1001901862304, photo=photo4, caption=msg, parse_mode='HTML')
+        bot.send_photo(chat_id=-1001827743242, photo=photo4, caption=msg, parse_mode='HTML',
+                       reply_markup=link,)
     elif category == 1:
-        bot.send_photo(chat_id=-1001901862304, photo=photo4, caption=msg, parse_mode='HTML')
+        bot.send_photo(chat_id=-1001827743242, photo=photo4, caption=msg, parse_mode='HTML',
+                       reply_markup=link, reply_to_message_id=362)
+
 
 def ad_from_tenant(ad, category, username, language):
+    link = types.InlineKeyboardMarkup()
+    link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://t.me/HH_Buro_bot'))
+
     msg = '#Ищу\n\n'
 
     mass = ad
@@ -96,7 +98,10 @@ def ad_from_tenant(ad, category, username, language):
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
                 else:
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
+
     if category == 0:
-        bot.send_message(chat_id=-1001901862304, text=msg, parse_mode='HTML')
+        bot.send_message(chat_id=-1001827743242, text=msg, parse_mode='HTML',
+                         reply_markup=link,)
     elif category == 1:
-        bot.send_message(chat_id=-1001901862304, text=msg, parse_mode='HTML')
+        bot.send_message(chat_id=-1001827743242, text='.', parse_mode='HTML',
+                         reply_markup=link, reply_to_message_id=362)

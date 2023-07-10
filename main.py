@@ -2,9 +2,10 @@ from telebot import types
 import datetime as DT
 
 from config import bot, translator
-from logic_function import send_questions, check_ad, photo_check, send_ad, send_ad_first_landlord, send_ad_first_tenant
+from logic_function import send_questions, check_ad, photo_check, send_ad, send_ad_first_landlord, send_ad_first_tenant, \
+    set_language
 
-from questions import realty, tenant, buy_sale, repeat_msg_1, repeat_msg_0
+from questions import realty, tenant, buy_sale, repeat_msg_1, repeat_msg_0, text
 from work_with_data import add_ad, get_ads, get_usernames, update_table, ad_time_data, get, get_lng, add_lng, \
     delete_elem, get_ads_by_filter
 from send_to_chanell import ad_from_landlord, ad_from_tenant
@@ -40,7 +41,7 @@ def category1(language):
     return [text_trns, ikb]
 
 
-def make_buttons(category, name, name1, mass, languge):
+def make_buttons(category, name, name1, mass, language):
     counter = 0
     questions.update({f'<a href="https://t.me/{name}">{name1}</a>': {}})
     if category == 'medicines':
@@ -67,6 +68,7 @@ def make_buttons(category, name, name1, mass, languge):
 # ///////////////////////////////////buttons//////////////////////////////
 markup_lng = types.ReplyKeyboardMarkup(True, True)
 markup_lng.row("Русский 🇷🇺", "English 🇺🇸")
+markup_lng.row("ไทย 🇹🇭")
 
 
 # ////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +222,7 @@ def callback_inline(call):
                     check_ad.add(types.InlineKeyboardButton(trans('Мопед/Мотоцикл', language),
                                                             callback_data='Мопед/Мотоцикл'))
                     check_ad.add(types.InlineKeyboardButton(trans('Другой транспорт', language),
-                                                            callback_data='Другой Транспорт'))
+                                                            callback_data='Другой транспорт'))
                     check_ad.add(types.InlineKeyboardButton(trans('Посмотреть все объявления', language),
                                                             callback_data='check_all'))
 
@@ -238,7 +240,7 @@ def callback_inline(call):
                     bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language),
                                      reply_markup=check_ad)
 
-        elif msg == 'Авто' or msg == 'Мопед/Мотоцикл' or msg == 'Другой Транспорт':
+        elif msg == 'Авто' or msg == 'Мопед/Мотоцикл' or msg == 'Другой транспорт':
             filters.update({username: []})
             filters[username].append(msg)
             if filters[username][0] == 'Авто':
@@ -254,10 +256,9 @@ def callback_inline(call):
 
                 bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language), reply_markup=check_ad)
 
-            elif filters[username][0] == 'Мопед/Мотоцикл' or filters[username][0] == 'Другой Транспорт':
+            elif filters[username][0] == 'Мопед/Мотоцикл' or filters[username][0] == 'Другой транспорт':
                 l_or_r = get('l_or_r',
                              f'<a href="https://t.me/{call.message.chat.username}">{call.message.chat.first_name}</a>')
-                print(f'filter -> {filters[username][0]}')
                 all_realty_ads = get_ads_by_filter(category, 'landlord', filters[username][0])
                 ads.update({username: all_realty_ads})
 
@@ -475,19 +476,28 @@ def send_stat_msg(message):
 
 @bot.message_handler(commands=['category'])
 def send_stat_msg(message):
-
-    ads[f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>'].clear()
-    counters.update({f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>':
-                         {'glb_counter': 0, 'glb_counter_ads': 1, 'menu_counter': 0}})
     language = get_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
-    delete_elem('user_category', f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
-    if f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>' in ad:
-        ad.pop(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
-    if f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>' in questions:
-        questions.pop(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+    try:
+        ads[f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>'].clear()
+        counters.update({f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>':
+                             {'glb_counter': 0, 'glb_counter_ads': 1, 'menu_counter': 0}})
+        delete_elem('user_category', f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+        if f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>' in ad:
+            ad.pop(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+        if f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>' in questions:
+            questions.pop(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+    except Exception as ex:
+        print(ex)
+    finally:
+        buttons = category1(language)
+        bot.send_message(message.chat.id, buttons[0], reply_markup=buttons[1])
 
-    buttons = category1(language)
-    bot.send_message(message.chat.id, buttons[0], reply_markup=buttons[1])
+
+@bot.message_handler(commands=['language'])
+def language(message):
+    language = get_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+    text = trans('Выберите язык', language)
+    bot.send_message(message.chat.id, text, reply_markup=markup_lng, parse_mode='HTML')
 
 
 @bot.message_handler(commands=['admin'])
@@ -502,8 +512,12 @@ def admin(message):
 
 
 @bot.message_handler(commands=['id'])
-def admin(message):
-    print(message)
+def text_messages(message):
+    print(message.chat)
+    link = types.InlineKeyboardMarkup()
+    link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://t.me/HH_Buro_bot'))
+    bot.send_message(chat_id=-1001901862304, text=text, parse_mode='HTML', reply_to_message_id=350, reply_markup=link)
+    # bot.send_message(chat_id=-1001827743242, text=text, parse_mode='HTML', reply_to_message_id=362)
 
 
 @bot.message_handler(content_types=['text'])
@@ -516,24 +530,20 @@ def text_messages(message):
     msg = message.text
 
     language = get_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
-    point = get('point', f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+    # point = get('point', f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
     category = get('category', f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
     l_or_r = get('l_or_r', f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
     username = get('username', f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
     # //////////////////////////////// Choosing a language /////////////////////////////////////////////
 
     if msg == 'Русский 🇷🇺':
+        set_language(message, language, 'ru')
 
-        add_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>', 'ru')
-        language = get_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
-        buttons = category1(language)
-        bot.send_message(message.chat.id, 'Язык был успешно изменен')
-        bot.send_message(message.chat.id, buttons[0], reply_markup=buttons[1])
     elif msg == 'English 🇺🇸':
-        add_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>', 'en')
-        buttons = category1(language=get_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>'))
-        bot.send_message(message.chat.id, 'The language has been successfully changed')
-        bot.send_message(message.chat.id, buttons[0], reply_markup=buttons[1])
+        set_language(message, language, 'en')
+
+    elif msg == 'ไทย 🇹🇭':
+        set_language(message, language, 'th')
 
     elif message.from_user.username in get_usernames() and category == 'admin':
         pass

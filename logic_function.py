@@ -2,6 +2,7 @@ from telebot import types
 
 from config import translator, bot
 from questions import repeat_msg_0, repeat_msg_1
+from work_with_data import get_lng, update_table, add_lng
 
 
 def trans(text, language):
@@ -232,3 +233,25 @@ def send_ad(call, mass_buttons, mass_buttons1, l_or_r, counter, category, ads, l
             ikb3 = types.InlineKeyboardMarkup(mass_buttons)
             bot.delete_message(call.message.chat.id, call.message.message_id)
             bot.send_message(call.message.chat.id, msg, reply_markup=ikb3, parse_mode='HTML')
+
+
+def set_language(message, language_chk, lng):
+    if language_chk == 0:
+        add_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>', lng)
+        bot.send_message(message.chat.id, 'Язык был успешно изменен')
+    else:
+        update_table('languages', 'language', lng,
+                     f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+
+    language = get_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
+
+    ikb = types.InlineKeyboardMarkup()
+    # ikb.add(types.InlineKeyboardButton(trans('Недвижимость', language), callback_data='realty'))
+    ikb.add(types.InlineKeyboardButton(trans('Транспорт', language), callback_data='transport'))
+    # ikb.add(types.InlineKeyboardButton(trans('Куплю/Продам', language), callback_data='buy_sale'))
+    # ikb.add(types.InlineKeyboardButton(trans('Медицина', language), callback_data='medicines'))
+    # ikb.add(types.InlineKeyboardButton(trans('Выполняю/Покупаю услуги', language), callback_data='do_buy'))
+
+    text_trns = trans('Выберите категорию: ', language)
+    bot.send_message(message.chat.id, text_trns, reply_markup=ikb)
+

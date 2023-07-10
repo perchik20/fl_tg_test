@@ -15,7 +15,6 @@ def trans(text):
 
 def get_ads_by_filter(person, category, filt):
     try:
-        print(f'filter -> {filt}')
         ads = {}
         sqlite_connection = sqlite3.connect('db.db')
         cursor = sqlite_connection.cursor()
@@ -100,8 +99,9 @@ def add_ad(contact, category, type, ad, current_date):
 
         elif category == 1:
             try:
+                print(mass)
                 if len(mass) == 7 or len(mass) == 5:
-                    mass.insert(0, 'Другой Транспорт')
+                    mass.insert(1, 'Другой транспорт')
 
                 forma = f"INSERT INTO ad_transport" \
                                       f"(user_id, category, contact, type, type_of_avto, model, period, money, comment, path_photo, last_date)" \
@@ -113,8 +113,8 @@ def add_ad(contact, category, type, ad, current_date):
                                       f"VALUES" \
                                       f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}' ,'{mass[2]}' ,'{mass[3]}' , '{mass[4]}', '{mass[5]}', date('{current_date}'));"
             finally:
-                if mass[0] == 'Другой Транспорт':
-                    mass.pop(0)
+                if mass[1] == 'Другой транспорт':
+                    mass.pop(1)
 
         count = cursor.execute(forma)
         sqlite_connection.commit()
