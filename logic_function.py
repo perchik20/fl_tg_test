@@ -5,8 +5,12 @@ from questions import repeat_msg_0, repeat_msg_1
 from work_with_data import get_lng, update_table, add_lng
 
 
-def trans(text, language):
-    text_trns = translator.translate(text, src='ru', dest=language).text
+def trans(text, lng):
+    lang = translator.detect(text).lang
+    if type(lang) == list:
+        text_trns = translator.translate(text, src=lang[1], dest=lng).text
+    else:
+        text_trns = translator.translate(text, src=lang, dest=lng).text
     return text_trns
 
 
@@ -68,7 +72,10 @@ def check_ad(message, ad, category, language):
 
         for sent in range(len(ad)):
             if category == 0:
-                msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + ad[sent] + '\n'
+                if len(ad) > 10:
+                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + ad[sent] + '\n'
+                else:
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + ad[sent] + '\n'
             elif category == 1:
                 msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + ad[sent] + '\n'
 
@@ -78,32 +85,40 @@ def check_ad(message, ad, category, language):
         bot.send_message(message.chat.id, msg, parse_mode="HTML", reply_markup=ikb4)
 
 
-def photo_check(ad, language):
-    repeat_msg = repeat_msg_1[2]
-    ad_clone = ad
-    ad_clone.pop(0)
-
-
-
+def photo_check(category, ad, language):
     msg = trans('Давайте проверим ваше объявление перед тем, как я его опубликую👇', language)
     msg += '\n\n'
 
-    for sent in range(len(ad_clone) - 1):
-        msg += f'<b>{trans(repeat_msg[sent][0], language)}</b> ' + ad_clone[sent] + '\n'
+    if category == 1:
+        repeat_msg = repeat_msg_1[2]
+        ad_clone = ad
+        ad_clone.pop(0)
+
+        for sent in range(len(ad_clone) - 1):
+            msg += f'<b>{trans(repeat_msg[sent][0], language)}</b> ' + ad_clone[sent] + '\n'
+
+    elif category == 0:
+        repeat_msg = repeat_msg_0[2]
+        ad_clone = ad
+        # ad_clone.pop(0)
+
+        for sent in range(len(ad_clone) - 1):
+            msg += f'<b>{trans(repeat_msg[sent][0], language)}</b> ' + ad_clone[sent] + '\n'
 
     return msg
 
 
 def send_ad_first_tenant(call, l_or_r, category, ads, language):
+    print(category)
+    print(l_or_r)
     if len(ads) == 0:
         yes_or_no = types.InlineKeyboardMarkup()
         yes_or_no.add(types.InlineKeyboardButton(trans('Да', language), callback_data='Yes'))
         yes_or_no.add(types.InlineKeyboardButton(trans('Нет', language), callback_data='No'))
         bot.send_message(call.message.chat.id, ' Пока таких объявлений нет.\nХотите изменить фильтры?',
                          reply_markup=yes_or_no)
-
+    print(ads)
     for ad in ads:
-
         photo4 = None
         if l_or_r == 'tenant':
             if category == 0:
@@ -111,26 +126,37 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
             elif category == 1:
                 photo4 = open(f'{ad[7]}', "rb")
 
-
         msg = '#Cдам\n\n'
+        if category == 0 and ad[0] == 'Коммерческая недвижимость':
+            print(ad)
+            ad.pop(2)
+            ad.pop(4)
+            ad.pop(4)
+            ad.pop(4)
+            ad.pop(4)
+            ad.pop(4)
+            print(ad)
+            for sent in range(len(ad) - 2):
+                msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
 
-        if category == 0:
+        elif category == 0:
             for sent in range(len(ad) - 2):
                 if sent == 9 or sent == 11:
-                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + str(ad[sent]) + '\n'
+                    msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
                 else:
                     msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
 
         elif category == 1 and ad[0] == 'Другой Транспорт':
+            print(ad)
             ad.pop(0)
             for sent in range(len(ad) - 2):
-                msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(ad[sent]) + '\n'
-
+                msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
+                print(msg)
         elif category == 1:
             for sent in range(len(ad) - 2):
                 if sent == 1:
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
-                           ad[sent] + '\n'
+                           trans(ad[sent], language) + '\n'
                 else:
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
 
@@ -140,7 +166,7 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
         bot.send_photo(call.message.chat.id, photo4, caption=msg, reply_markup=ad_button, parse_mode='HTML')
 
 
-def send_ad_first_landlord(call, counter, category, ads, language):
+def send_ad_first_landlord(call, category, ads, language):
     if len(ads) == 0:
         yes_or_no = types.InlineKeyboardMarkup()
         yes_or_no.add(types.InlineKeyboardButton(trans('Да', language), callback_data='Yes'))
@@ -148,30 +174,26 @@ def send_ad_first_landlord(call, counter, category, ads, language):
         bot.send_message(call.message.chat.id, ' Пока таких объявлений нет.\nХотите изменить фильтры?',
                          reply_markup=yes_or_no)
     for ad in ads:
-        msg = '#Ищу\n\n'
+        msg = '#Арендую\n\n'
 
         if category == 0:
+            print(ad)
+            ad.pop(10)
             for sent in range(len(ad)):
                 if sent == 9:
-                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + str(
-                        ad[sent]) + '\n'
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
                 else:
-                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(
-                        ad[sent],
-                        language) + '\n'
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
         elif category == 1 and ad[0] == 'Другой Транспорт':
             ad.pop(0)
             for sent in range(len(ad)):
-                msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(ad[sent]) + '\n'
+                msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
         elif category == 1:
             for sent in range(len(ad)):
                 if sent == 2 or sent == 6:
-                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + \
-                           ad[sent] + '\n'
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
                 else:
-                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(
-                        ad[sent],
-                        language) + '\n'
+                    msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
 
         ad_button = types.InlineKeyboardMarkup()
         ad_button.add(types.InlineKeyboardButton(trans('Главное меню', language), callback_data='back_menu1'))
@@ -195,7 +217,6 @@ def send_ad(call, mass_buttons, mass_buttons1, l_or_r, counter, category, ads, l
 
     for sent in range(len(mass)):
         if category == 0:
-
             if sent == 9 or sent == 11:
                 msg += f'<b>{trans(repeat_msg_0[0][sent][0], language)}</b> ' + \
                        ads[counter][sent] + '\n'
@@ -246,7 +267,7 @@ def set_language(message, language_chk, lng):
     language = get_lng(f'<a href="https://t.me/{message.from_user.username}">{message.from_user.first_name}</a>')
 
     ikb = types.InlineKeyboardMarkup()
-    # ikb.add(types.InlineKeyboardButton(trans('Недвижимость', language), callback_data='realty'))
+    ikb.add(types.InlineKeyboardButton(trans('Недвижимость', language), callback_data='realty'))
     ikb.add(types.InlineKeyboardButton(trans('Транспорт', language), callback_data='transport'))
     # ikb.add(types.InlineKeyboardButton(trans('Куплю/Продам', language), callback_data='buy_sale'))
     # ikb.add(types.InlineKeyboardButton(trans('Медицина', language), callback_data='medicines'))
@@ -254,4 +275,32 @@ def set_language(message, language_chk, lng):
 
     text_trns = trans('Выберите категорию: ', language)
     bot.send_message(message.chat.id, text_trns, reply_markup=ikb)
+
+
+def filters_(category, language, call):
+
+    if category == 1:
+        check_ad = types.InlineKeyboardMarkup()
+        check_ad.add(types.InlineKeyboardButton(trans('Авто', language),
+                                                callback_data='Авто'))
+        check_ad.add(types.InlineKeyboardButton(trans('Мопед/Мотоцикл', language),
+                                                callback_data='Мопед/Мотоцикл'))
+        check_ad.add(types.InlineKeyboardButton(trans('Другой транспорт', language),
+                                                callback_data='Другой транспорт'))
+        check_ad.add(types.InlineKeyboardButton(trans('Посмотреть все объявления', language),
+                                                callback_data='check_all'))
+
+        bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language),
+                         reply_markup=check_ad)
+    elif category == 0:
+        check_ad = types.InlineKeyboardMarkup()
+        check_ad.add(types.InlineKeyboardButton(trans('Кондо', language),
+                                                callback_data='Кондо'))
+        check_ad.add(types.InlineKeyboardButton(trans('Вилла', language),
+                                                callback_data='Вилла'))
+        check_ad.add(types.InlineKeyboardButton(trans('Посмотреть все объявления', language),
+                                                callback_data='check_all'))
+
+        bot.send_message(call.message.chat.id, trans('Выберите пункт ниже:', language),
+                         reply_markup=check_ad)
 

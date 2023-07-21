@@ -8,10 +8,15 @@ def trans(text, language):
     return text_trns
 
 
-def ad_from_landlord(category, ad, username, language):
+def ad_from_landlord(call, category, ad, username, language):
     mass = ad
     photo4 = None
-    if category == 0:
+    if category == 0 and len(mass) == 7:
+        photo4 = open(f'{mass[6]}', "rb")
+        mass.pop(0)
+        mass.pop(5)
+        mass.append(username)
+    elif category == 0:
         photo4 = open(f'{mass[12]}', "rb")
         mass.pop(0)
         mass.pop(11)
@@ -33,10 +38,17 @@ def ad_from_landlord(category, ad, username, language):
         mass.pop(6)
         mass.append(username)
 
-    msg = '#сдам\n\n'
+    msg = '#Cдам\n\n'
+    print(ad)
 
-    link = types.InlineKeyboardMarkup()
-    link .add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://t.me/HH_Buro_bot'))
+    link = None
+    if category == 0:
+        link = types.InlineKeyboardMarkup()
+        link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление',  url='t.me/Kilimandzharo_bot?start=realty'))
+    elif category == 1:
+        link = types.InlineKeyboardMarkup()
+        link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='t.me/Kilimandzharo_bot?start=transport'))
+
 
     if category == 1 and len(ad) == 6:
         for sent in range(len(mass)):
@@ -44,6 +56,9 @@ def ad_from_landlord(category, ad, username, language):
                 msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
             else:
                 msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
+    if category == 0 and len(ad) == 6:
+        for sent in range(len(mass)):
+            msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
     else:
         for sent in range(len(mass)):
             if category == 0:
@@ -57,19 +72,33 @@ def ad_from_landlord(category, ad, username, language):
                 else:
                     msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
 
+    back = types.InlineKeyboardMarkup()
+    back.add(types.InlineKeyboardButton(trans('Главое Меню', language), callback_data='back_menu1'))
+
     if category == 0:
-        bot.send_photo(chat_id=-1001827743242, photo=photo4, caption=msg, parse_mode='HTML',
-                       reply_markup=link,)
+        msg_link = bot.send_photo(chat_id=-1001901862304, photo=photo4, caption=msg, parse_mode='HTML',
+                       reply_markup=link, reply_to_message_id=415)
+        bot.send_message(call.message.chat.id,
+                         trans('Ваше объявление добавлено!\nВы можете его найти по ссылке -> \n', language)
+                         + f'https://t.me/Hua_Hin_bit/415/{msg_link.id}', reply_markup=back)
     elif category == 1:
-        bot.send_photo(chat_id=-1001827743242, photo=photo4, caption=msg, parse_mode='HTML',
-                       reply_markup=link, reply_to_message_id=362)
+        msg_link = bot.send_photo(chat_id=-1001901862304, photo=photo4, caption=msg, parse_mode='HTML',
+                       reply_markup=link, reply_to_message_id=414)
+        bot.send_message(call.message.chat.id,
+                         trans('Ваше объявление добавлено!\nВы можете его найти по ссылке -> \n', language)
+                         + f'https://t.me/Hua_Hin_bit/414/{msg_link.id}', reply_markup=back)
 
 
-def ad_from_tenant(ad, category, username, language):
-    link = types.InlineKeyboardMarkup()
-    link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='https://t.me/HH_Buro_bot'))
+def ad_from_tenant(call, ad, category, username, language):
+    link = None
+    if category == 0:
+        link = types.InlineKeyboardMarkup()
+        link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление',  url='t.me/Kilimandzharo_bot?start=realty'))
+    elif category == 1:
+        link = types.InlineKeyboardMarkup()
+        link.add(types.InlineKeyboardButton(text='Разместить/Найти объявление', url='t.me/Kilimandzharo_bot?start=transport'))
 
-    msg = '#Ищу\n\n'
+    msg = '#Арендую\n\n'
 
     mass = ad
     mass.append(username)
@@ -99,9 +128,21 @@ def ad_from_tenant(ad, category, username, language):
                 else:
                     msg += f'<b>{trans(repeat_msg_1[1][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
 
+    back = types.InlineKeyboardMarkup()
+    back.add(types.InlineKeyboardButton(trans('Главое Меню', language), callback_data='back_menu1'))
+
     if category == 0:
-        bot.send_message(chat_id=-1001827743242, text=msg, parse_mode='HTML',
-                         reply_markup=link,)
+        msg_link = bot.send_message(chat_id=-1001901862304, text=msg, parse_mode='HTML',
+                         reply_markup=link, reply_to_message_id=415)
+
+        bot.send_message(call.message.chat.id,
+                         trans('Ваше объявление добавлено!\nВы можете его найти по ссылке -> \n', language)
+                         + f'https://t.me/Hua_Hin_bit/415/{msg_link.id}', reply_markup=back)
+        print(msg_link)
     elif category == 1:
-        bot.send_message(chat_id=-1001827743242, text='.', parse_mode='HTML',
-                         reply_markup=link, reply_to_message_id=362)
+        msg_link = bot.send_message(chat_id=-1001901862304, text=msg, parse_mode='HTML',
+                         reply_markup=link, reply_to_message_id=414)
+
+        bot.send_message(call.message.chat.id,
+                         trans('Ваше объявление добавлено!\nВы можете его найти по ссылке -> \n', language)
+                         + f'https://t.me/Hua_Hin_bit/414/{msg_link.id}', reply_markup=back)

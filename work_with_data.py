@@ -45,7 +45,6 @@ def get_ads_by_filter(person, category, filt):
 
 def get_ads(person, category):
     try:
-        ads = {}
         sqlite_connection = sqlite3.connect('db.db')
         cursor = sqlite_connection.cursor()
         if person == 0:
@@ -78,31 +77,42 @@ def add_ad(contact, category, type, ad, current_date):
         mass = ad
 
         if category == 0:
-            # for i in range(0, len(mass)):
-            #     if i != 7 or i != 8 or i != 9 or i != 11:
-            #         mass[i] = trans(mass[i])
+            if len(mass) == 13 or len(mass) == 7:
+                mass[1] = trans(mass[1])
+            else:
+                mass[0] = trans(mass[0])
 
-            try:
+            if len(mass) == 13:
                 forma = f"INSERT INTO ad_realty" \
                                     f"(user_id, person, contact, type, rooms, bathrooms, size, pool, child, " \
                                     f"pets, minimal_months, price, link_maps, comment, path_photo, last_date)" \
                                     f"VALUES " \
                                     f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', '{mass[6]}', " \
                                     f"'{mass[7]}', '{mass[8]}', '{mass[9]}', '{mass[10]}', '{mass[11]}', '{mass[12]}', date('{current_date}'));"
-            except:
+
+            elif ad[1] == 'Коммерческая недвижимость':
+                forma = f"INSERT INTO ad_realty" \
+                        f"(user_id, person, contact, type, rooms, size, " \
+                        f"link_maps, comment, path_photo, last_date)" \
+                        f"VALUES " \
+                        f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', '{mass[6]}', date('{current_date}'));"
+
+            else:
                 forma = f"INSERT INTO ad_realty" \
                                       f"(person, contact, type, rooms, bathrooms, size, pool, child, " \
-                                      f"pets, minimal_months, price, last_date)" \
+                                      f"pets, minimal_months, price, comment, last_date)" \
                                       f"VALUES" \
                                       f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', " \
-                                      f"'{mass[6]}', '{mass[7]}', '{mass[8]}', date('{current_date}'));"
+                                      f"'{mass[6]}', '{mass[7]}', '{mass[8]}', '{mass[9]}', date('{current_date}'));"
 
         elif category == 1:
+            print(mass)
             try:
-                print(mass)
                 if len(mass) == 7 or len(mass) == 5:
                     mass.insert(1, 'Другой транспорт')
-
+                else:
+                    mass[1] = trans(mass[1])
+                    mass[2] = trans(mass[2]).capitalize()
                 forma = f"INSERT INTO ad_transport" \
                                       f"(user_id, category, contact, type, type_of_avto, model, period, money, comment, path_photo, last_date)" \
                                       f"VALUES " \

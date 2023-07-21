@@ -116,19 +116,19 @@
 #         ads = remake_ads(get_ads(person=category), category)
 #         send = create_msg(ads, ad, category)
 #     methods(send[0], send[1])
-
-import requests
-from config import token
-
-
-def send_personal_msg(id):
-    params = {
-        'chat_id': id,
-        'text': 'Привет как дела?',
-    }
-
-    response = requests.get('https://api.telegram.org/bot'+token+'/sendMessage', params=params)
-    print(response)
-
+#
+# import requests
+# from config import token
+#
+#
+# def send_personal_msg(id):
+#     params = {
+#         'chat_id': id,
+#         'text': 'Привет как дела?',
+#     }
+#
+#     response = requests.get('https://api.telegram.org/bot'+token+'/sendMessage', params=params)
+#     print(response)
+#
 
 
