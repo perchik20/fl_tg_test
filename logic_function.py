@@ -53,23 +53,24 @@ def send_questions(message, question, language, questions, l_or_r):
 
 
 def check_ad(message, ad, category, language):
+    msg = trans('Давайте проверим ваше объявление перед тем, как я его опубликую👇', language)
+    msg += '\n\n'
+    print(ad)
     if ad[0] == 'Другой транспорт':
         repeat_msg = repeat_msg_1[2]
         ad_clone = ad
-        msg = trans('Давайте проверим ваше объявление перед тем, как я его опубликую👇', language)
-        msg += '\n\n'
         ad_clone.pop(0)
         for sent in range(len(ad)):
             msg += f'<b>{trans(repeat_msg[sent][0], language)}</b> ' + ad_clone[sent] + '\n'
 
-        ikb4 = types.InlineKeyboardMarkup()
-        ikb4.add(types.InlineKeyboardButton(trans('Подтвердить', language), callback_data='access'))
-        ikb4.add(types.InlineKeyboardButton(trans('Исправить', language), callback_data='remake'))
-        bot.send_message(message.chat.id, msg, parse_mode="HTML", reply_markup=ikb4)
-    else:
-        msg = trans('Давайте проверим ваше объявление перед тем, как я его опубликую👇', language)
-        msg += '\n\n'
+    elif ad[0] == 'Коммерческая недвижимость':
+        repeat_msg = repeat_msg_0[3]
+        ad_clone = ad
 
+        for sent in range(len(ad_clone) - 1):
+            msg += f'<b>{trans(repeat_msg[sent][0], language)}</b> ' + ad_clone[sent] + '\n'
+
+    else:
         for sent in range(len(ad)):
             if category == 0:
                 if len(ad) > 10:
@@ -79,10 +80,10 @@ def check_ad(message, ad, category, language):
             elif category == 1:
                 msg += f'<b>{trans(repeat_msg_1[0][sent][0], language)}</b> ' + ad[sent] + '\n'
 
-        ikb4 = types.InlineKeyboardMarkup()
-        ikb4.add(types.InlineKeyboardButton(trans('Подтвердить', language), callback_data='access'))
-        ikb4.add(types.InlineKeyboardButton(trans('Исправить', language), callback_data='remake'))
-        bot.send_message(message.chat.id, msg, parse_mode="HTML", reply_markup=ikb4)
+    ikb4 = types.InlineKeyboardMarkup()
+    ikb4.add(types.InlineKeyboardButton(trans('Подтвердить', language), callback_data='access'))
+    ikb4.add(types.InlineKeyboardButton(trans('Исправить', language), callback_data='remake'))
+    bot.send_message(message.chat.id, msg, parse_mode="HTML", reply_markup=ikb4)
 
 
 def photo_check(category, ad, language):
@@ -127,6 +128,7 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
                 photo4 = open(f'{ad[7]}', "rb")
 
         msg = '#Cдам\n\n'
+
         if category == 0 and ad[0] == 'Коммерческая недвижимость':
             print(ad)
             ad.pop(2)
@@ -174,9 +176,23 @@ def send_ad_first_landlord(call, category, ads, language):
         bot.send_message(call.message.chat.id, ' Пока таких объявлений нет.\nХотите изменить фильтры?',
                          reply_markup=yes_or_no)
     for ad in ads:
+
         msg = '#Арендую\n\n'
 
-        if category == 0:
+        if category == 0 and ad[0] == 'Коммерческая недвижимость':
+            print(ad)
+            ad.pop(2)
+            ad.pop(3)
+            ad.pop(3)
+            ad.pop(3)
+            ad.pop(5)
+            ad.pop(5)
+            ad.pop(6)
+            print(ad)
+            for sent in range(len(ad) - 2):
+                msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
+
+        elif category == 0:
             print(ad)
             ad.pop(10)
             for sent in range(len(ad)):
@@ -298,6 +314,8 @@ def filters_(category, language, call):
                                                 callback_data='Кондо'))
         check_ad.add(types.InlineKeyboardButton(trans('Вилла', language),
                                                 callback_data='Вилла'))
+        check_ad.add(types.InlineKeyboardButton(trans('Коммерческая недвижимость', language),
+                                                callback_data='Коммерческая_недвижимость'))
         check_ad.add(types.InlineKeyboardButton(trans('Посмотреть все объявления', language),
                                                 callback_data='check_all'))
 

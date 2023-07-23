@@ -15,7 +15,6 @@ def trans(text):
 
 def get_ads_by_filter(person, category, filt):
     try:
-        ads = {}
         sqlite_connection = sqlite3.connect('db.db')
         cursor = sqlite_connection.cursor()
         if person == 0:
@@ -90,12 +89,21 @@ def add_ad(contact, category, type, ad, current_date):
                                     f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', '{mass[6]}', " \
                                     f"'{mass[7]}', '{mass[8]}', '{mass[9]}', '{mass[10]}', '{mass[11]}', '{mass[12]}', date('{current_date}'));"
 
-            elif ad[1] == 'Коммерческая недвижимость':
-                forma = f"INSERT INTO ad_realty" \
-                        f"(user_id, person, contact, type, rooms, size, " \
-                        f"link_maps, comment, path_photo, last_date)" \
-                        f"VALUES " \
-                        f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', '{mass[6]}', date('{current_date}'));"
+            elif ad[1] == 'Коммерческая недвижимость' or ad[0] == 'Коммерческая недвижимость':
+                print(ad)
+
+                if len(ad) == 7:
+                    forma = f"INSERT INTO ad_realty" \
+                            f"(user_id, person, contact, type, rooms, size, " \
+                            f"link_maps, comment, path_photo, last_date)" \
+                            f"VALUES " \
+                            f"({mass[0]}, '{type}', '{contact}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', '{mass[5]}', '{mass[6]}', date('{current_date}'));"
+                else:
+                    forma = f"INSERT INTO ad_realty" \
+                            f"(person, contact, type, rooms, size, " \
+                            f"minimal_months, price, last_date)" \
+                            f"VALUES " \
+                            f"('{type}', '{contact}', '{mass[0]}', '{mass[1]}', '{mass[2]}', '{mass[3]}', '{mass[4]}', date('{current_date}'));"
 
             else:
                 forma = f"INSERT INTO ad_realty" \

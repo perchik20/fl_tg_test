@@ -102,7 +102,12 @@ def ad_from_tenant(call, ad, category, username, language):
 
     mass = ad
     mass.append(username)
-    if category == 1 and len(ad) == 6:
+    if category == 0 and ad[0] == 'Коммерческая недвижимость':
+        print(f'in func -> {ad}')
+        for sent in range(len(mass)):
+            msg += f'<b>{trans(repeat_msg_0[3][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
+
+    elif category == 1 and len(ad) == 6:
         for sent in range(len(mass)):
             if sent == 5:
                 msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
