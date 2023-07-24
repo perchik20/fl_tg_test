@@ -131,15 +131,15 @@ def send_ad_first_tenant(call, l_or_r, category, ads, language):
 
         if category == 0 and ad[0] == 'Коммерческая недвижимость':
             print(ad)
-            ad.pop(2)
-            ad.pop(4)
-            ad.pop(4)
-            ad.pop(4)
-            ad.pop(4)
-            ad.pop(4)
-            print(ad)
-            for sent in range(len(ad) - 2):
-                msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
+            clone_ad = []
+            for i in ad:
+                if not i:
+                    continue
+                else:
+                    clone_ad.append(i)
+            print(clone_ad)
+            for sent in range(len(clone_ad) - 2):
+                msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + trans(str(clone_ad[sent]), language) + '\n'
 
         elif category == 0:
             for sent in range(len(ad) - 2):
@@ -181,21 +181,22 @@ def send_ad_first_landlord(call, category, ads, language):
 
         if category == 0 and ad[0] == 'Коммерческая недвижимость':
             print(ad)
-            ad.pop(2)
-            ad.pop(3)
-            ad.pop(3)
-            ad.pop(3)
-            ad.pop(5)
-            ad.pop(5)
-            ad.pop(6)
-            print(ad)
-            for sent in range(len(ad) - 2):
-                msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
+            clone_ad = []
+            for i in ad:
+                if not i:
+                   continue
+                else:
+                    clone_ad.append(i)
+
+            print(clone_ad)
+            for sent in range(len(clone_ad) - 1):
+                msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + trans(str(clone_ad[sent]), language) + '\n'
 
         elif category == 0:
-            print(ad)
-            ad.pop(10)
-            for sent in range(len(ad)):
+            print(f'0 -> {ad}')
+            ad.pop(9)
+            print(f'0 -> {ad}')
+            for sent in range(len(ad) - 2):
                 if sent == 9:
                     msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
                 else:
