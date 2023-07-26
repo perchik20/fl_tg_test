@@ -194,13 +194,19 @@ def send_ad_first_landlord(call, category, ads, language):
 
         elif category == 0:
             print(f'0 -> {ad}')
-            ad.pop(9)
-            print(f'0 -> {ad}')
-            for sent in range(len(ad) - 2):
-                if sent == 9:
-                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(str(ad[sent]), language) + '\n'
+            clone_ad = []
+            for i in ad:
+                if not i:
+                    continue
                 else:
-                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(ad[sent], language) + '\n'
+                    clone_ad.append(i)
+            print(f'0 -> {clone_ad}')
+            for sent in range(len(clone_ad) - 1):
+                if sent == 9:
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(str(clone_ad[sent]), language) + '\n'
+                else:
+                    msg += f'<b>{trans(repeat_msg_0[1][sent][0], language)}</b> ' + trans(clone_ad[sent], language) + '\n'
+
         elif category == 1 and ad[0] == 'Другой Транспорт':
             ad.pop(0)
             for sent in range(len(ad)):
