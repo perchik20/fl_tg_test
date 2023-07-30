@@ -52,11 +52,10 @@ def ad_from_landlord(call, category, ad, username, language):
 
     if category == 1 and len(ad) == 6:
         for sent in range(len(mass)):
-            if sent == 5:
-                msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
+            if sent == 5:          msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
             else:
                 msg += f'<b>{trans(repeat_msg_1[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
-    if category == 0 and len(ad) == 6:
+    elif category == 0 and len(ad) == 6:
         for sent in range(len(mass)):
             msg += f'<b>{trans(repeat_msg_0[2][sent][0], language)}</b> ' + str(mass[sent]) + '\n'
     else:
